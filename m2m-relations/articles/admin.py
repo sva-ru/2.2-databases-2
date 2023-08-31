@@ -17,10 +17,8 @@ class ScopeInlineFormset(BaseInlineFormSet):
 
 class ScopeInline(admin.TabularInline):
     model = Scope
+    g
     extra = 1
-
-
-
 
 @admin.register(Article)
 class ArticleAdmin(admin.ModelAdmin):

@@ -5,15 +5,18 @@ from .models import Article, Scope, Tag
 
 class ScopeInlineFormset(BaseInlineFormSet):
     def clean(self):
+        count = 0
         for form in self.forms:
-            # В form.cleaned_data будет словарь с данными
-            # каждой отдельной формы, которые вы можете проверить
-            form.cleaned_data
-            # вызовом исключения ValidationError можно указать админке о наличие ошибки
-            # таким образом объект не будет сохранен,
-            # а пользователю выведется соответствующее сообщение об ошибке
-            raise ValidationError('Тут всегда ошибка')
-        return super().clean()  # вызываем базовый код переопределяемого метода
+            if self.deleted_forms and self._should_delete_form(form):
+                continue
+            elif form.cleaned_data.get('is_main'):
+                count += 1
+            if count > 1:
+                raise ValidationError('Is_main should be only one tag')
+            elif count == 0:
+                raise ValidationError('Assign is_main')
+
+        return super().clean()
 
 class ScopeInline(admin.TabularInline):
     model = Scope
